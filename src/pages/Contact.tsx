@@ -19,10 +19,9 @@ const Contact = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
+
     if (!formData.name || !formData.email || !formData.message) {
       toast({
         title: "Campos obrigatórios",
@@ -32,20 +31,56 @@ const Contact = () => {
       return;
     }
 
-    // Here you would normally send the form data to your backend
-    toast({
-      title: "Mensagem enviada!",
-      description: "Entraremos em contacto consigo em breve.",
-    });
+    try {
+      const payload = Object.fromEntries(Object.entries(formData).filter(([_, v]) => v !== ""));
+      const res = await fetch(
+        "/webhook/824d9dac-e929-4c0b-a2ba-4a12b9e7661a",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      message: "",
-    });
+      if (!res.ok) {
+        let details = "";
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          try {
+            const j = await res.json();
+            details = typeof j === "string" ? j : j?.message || JSON.stringify(j);
+          } catch {}
+        } else {
+          try {
+            details = await res.text();
+          } catch {}
+        }
+        throw new Error(`HTTP ${res.status} ${res.statusText}${details ? ` - ${details}` : ""}`);
+      }
+
+      toast({
+        title: "Mensagem enviada!",
+        description: "Entraremos em contacto consigo em breve.",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        message: "",
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      toast({
+        title: "Erro ao enviar",
+        description: msg || "Não foi possível enviar os dados. Tente novamente.",
+        variant: "destructive",
+      });
+      if (msg) {
+        console.error(msg);
+      }
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

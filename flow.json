@@ -1,0 +1,106 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "824d9dac-e929-4c0b-a2ba-4a12b9e7661a",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "7ac8f101-6da0-4b2d-9ff0-6aac13d0000a",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -32
+      ],
+      "webhookId": "8c49eb4d-d439-418e-8ea1-e8fdac05c0e2"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "subject",
+              "value": "Novo contacto: {{$json.name}}"
+            },
+            {
+              "name": "text",
+              "value": "Nome: {{$json.name}}\nEmail: {{$json.email}}\nTelefone: {{$json.phone}}\nEmpresa: {{$json.company}}\nMensagem:\n{{$json.message}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f875bc19-d67b-425d-9317-93a154304ee9",
+      "name": "Set Email Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "rodrigo2006meneses@gmail.com",
+        "toEmail": "rodrigo2006meneses@gmail.com",
+        "subject": "={{$json.subject}}",
+        "text": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "4e7a477f-bfd5-4bb3-aa8e-a101ce767a0b",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -32
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "6p5VpTtR4yVwLI1L",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Email Content": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b349c0809dcc88d64cca1f621ae98d5566917aaf47d2f14ce44044f3a040bfc6"
+  }
+}
