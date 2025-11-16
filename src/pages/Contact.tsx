@@ -34,7 +34,7 @@ const Contact = () => {
     try {
       const payload = Object.fromEntries(Object.entries(formData).filter(([_, v]) => v !== ""));
       const res = await fetch(
-        "/webhook/824d9dac-e929-4c0b-a2ba-4a12b9e7661a",
+        "http://localhost:5678/webhook/824d9dac-e929-4c0b-a2ba-4a12b9e7661a",
         {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
